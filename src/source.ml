@@ -202,7 +202,8 @@ let rec unify a b =
         if s <> s' then
           raise (Clock_conflict (variable_to_string a, variable_to_string b))
     | ( Link ({ contents = Unknown (sa, ca) } as ra),
-        Link ({ contents = Unknown (sb, cb) } as rb) ) ->
+        Link ({ contents = Unknown (sb, cb) } as rb) )
+      when ra != rb ->
         (* TODO perhaps optimize ca@cb *)
         occurs_check a b;
         let merge =
