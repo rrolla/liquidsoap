@@ -202,16 +202,16 @@ let rec unify a b =
         if s <> s' then
           raise (Clock_conflict (variable_to_string a, variable_to_string b))
     | ( Link ({ contents = Unknown (sa, ca) } as ra),
-        Link ({ contents = Unknown (sb, cb) } as rb) )
-      when ra != rb ->
-        (* TODO perhaps optimize ca@cb *)
-        occurs_check a b;
-        let merge =
-          (* Using List.rev_append to remain tail-recursive, see #1108. *)
-          Link (ref (Unknown (List.rev_append sa sb, List.rev_append ca cb)))
-        in
-        ra := Same_as merge;
-        rb := Same_as merge
+        Link ({ contents = Unknown (sb, cb) } as rb) ) ->
+        if ra != rb then (
+          (* TODO perhaps optimize ca@cb *)
+          occurs_check a b;
+          let merge =
+            (* Using List.rev_append to remain tail-recursive, see #1108. *)
+            Link (ref (Unknown (List.rev_append sa sb, List.rev_append ca cb)))
+          in
+          ra := Same_as merge;
+          rb := Same_as merge )
     | Known c, Link ({ contents = Unknown (s, sc) } as r)
     | Link ({ contents = Unknown (s, sc) } as r), Known c ->
         occurs_check (Known c) (Link r);
